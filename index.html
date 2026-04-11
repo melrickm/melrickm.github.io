@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy 27th Birthday! 🎂</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+
+    :root {
+      --cream:     #FBF0F2;
+      --blush:     #EDCDD2;
+      --rose:      #C96B7A;
+      --deep-rose: #A84D5C;
+      --warm-sand: #F5E4E8;
+      --brown:     #6B2D3A;
+      --light-brown: #B0808A;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--cream);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--rose);
+    }
+
+    /* ── Confetti canvas ── */
+    #confetti-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* ── Slide container ── */
+    .slider {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1),
+                  opacity 0.6s ease;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: all;
+    }
+
+    .slide.exit-left {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+
+    /* ── Slide 0 — hero ── */
+    .slide-hero {
+      background: linear-gradient(160deg, var(--warm-sand) 0%, var(--cream) 70%);
+    }
+
+    .hero-photo-wrap {
+      position: relative;
+      margin-bottom: 1.8rem;
+    }
+
+    .hero-photo-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      background: conic-gradient(var(--blush), var(--rose), var(--blush), var(--rose), var(--blush));
+      animation: spin 6s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hero-photo {
+      width: 220px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 6px solid var(--cream);
+      position: relative;
+      z-index: 1;
+      display: block;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      color: var(--rose);
+      text-align: center;
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: var(--light-brown);
+      text-align: center;
+      font-style: italic;
+      margin-bottom: 0.4rem;
+    }
+
+    .hero-hint {
+      margin-top: 1.6rem;
+      font-size: 0.85rem;
+      color: var(--light-brown);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50%       { opacity: 1; }
+    }
+
+    /* ── Slides 1–27 — things ── */
+    .slide-thing {
+      background: var(--cream);
+    }
+
+    .thing-number {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(5rem, 18vw, 12rem);
+      color: var(--blush);
+      line-height: 1;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      user-select: none;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .thing-card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.90);
+      backdrop-filter: blur(6px);
+      border: 2px solid var(--blush);
+      border-radius: 24px;
+      padding: clamp(1.4rem, 5vw, 2.8rem) clamp(1.6rem, 6vw, 3.5rem);
+      max-width: 680px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 12px 48px rgba(201, 107, 122, 0.10);
+    }
+
+    .thing-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--rose);
+      margin-bottom: 0.8rem;
+      font-weight: 700;
+    }
+
+    .thing-text {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.3rem, 4vw, 2rem);
+      color: var(--rose);
+      line-height: 1.45;
+    }
+
+    .thing-emoji {
+      font-size: 2.4rem;
+      margin-top: 1rem;
+      display: block;
+    }
+
+    /* ── Slide 28 — birthday ── */
+    .slide-final {
+      background: linear-gradient(135deg, #C96B7A 0%, #A84D5C 100%);
+    }
+
+    .final-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 8vw, 5rem);
+      color: #fff;
+      text-align: center;
+      line-height: 1.15;
+      margin-bottom: 1.2rem;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.15);
+    }
+
+    .final-message {
+      font-size: clamp(1rem, 2.8vw, 1.3rem);
+      color: rgba(255,255,255,0.92);
+      text-align: center;
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 1.6rem;
+    }
+
+    .final-emoji-row {
+      font-size: 2.5rem;
+      letter-spacing: 0.4rem;
+      animation: bounce 1.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-12px); }
+    }
+
+    .candles {
+      font-size: 3rem;
+      margin-top: 1rem;
+      letter-spacing: 0.2rem;
+    }
+
+    /* ── Navigation arrows ── */
+    .nav-btn {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--rose);
+      border: none;
+      color: #fff;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      font-size: 1.4rem;
+      cursor: pointer;
+      z-index: 50;
+      box-shadow: 0 4px 18px rgba(201, 108, 122, 0.35);
+      transition: background 0.2s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .nav-btn:hover {
+      background: var(--deep-rose);
+      transform: translateY(-50%) scale(1.08);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.25;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    #btn-prev { left: 1.2rem; }
+    #btn-next { right: 1.2rem; }
+
+    /* ── Progress dots ── */
+    .progress {
+      position: fixed;
+      bottom: 1.4rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 50;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--blush);
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .dot.active {
+      background: var(--rose);
+      transform: scale(1.4);
+    }
+
+    /* ── Floating hearts background ── */
+    .hearts {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      bottom: -60px;
+      font-size: 1.2rem;
+      opacity: 0;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0%   { opacity: 0; transform: translateY(0) rotate(0deg); }
+      10%  { opacity: 0.7; }
+      90%  { opacity: 0.5; }
+      100% { opacity: 0; transform: translateY(-110vh) rotate(360deg); }
+    }
+
+    @media (max-width: 480px) {
+      .nav-btn { width: 42px; height: 42px; font-size: 1.1rem; }
+      #btn-prev { left: 0.5rem; }
+      #btn-next { right: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Floating hearts -->
+<div class="hearts" id="hearts"></div>
+
+<!-- Slides -->
+<div class="slider" id="slider">
+
+  <!-- Slide 0: Hero -->
+  <div class="slide slide-hero active" data-index="0">
+    <div class="hero-photo-wrap">
+      <img class="hero-photo" src="assets/girlfriend.jpg" alt="My love" />
+    </div>
+    <h1 class="hero-title">Hey you! 👀</h1>
+    <p class="hero-subtitle">Something special is waiting for you inside…</p>
+    <p class="hero-subtitle">reasons why you're absolutely amazing.</p>
+    <p class="hero-hint">tap the arrow to begin →</p>
+  </div>
+
+  <!-- Slides 1–18: Things -->
+  <div class="slide slide-thing" data-index="1">
+    <span class="thing-number">1</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #1</p>
+      <p class="thing-text">You are an amazing mom to all your pets — Zuzu, Pillow and Mufa are the three luckiest babies alive. 🐾</p>
+      <span class="thing-emoji">🐾</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="2">
+    <span class="thing-number">2</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #2</p>
+      <p class="thing-text">The way you say <em>"bevda"</em> for the absolute smallest of things — nobody else could pull that off and still be adorable.</p>
+      <span class="thing-emoji">😂</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="3">
+    <span class="thing-number">3</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #3</p>
+      <p class="thing-text">The way you showed me your emotions and gently taught me that it's okay — actually, beautiful — to feel things deeply.</p>
+      <span class="thing-emoji">🥹</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="4">
+    <span class="thing-number">4</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #4</p>
+      <p class="thing-text">The way you burst into random songs at completely random moments — and somehow always know every single word.</p>
+      <span class="thing-emoji">🎵</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="5">
+    <span class="thing-number">5</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #5</p>
+      <p class="thing-text">How fiercely you care for the people you love — you don't just love, you go all in, every single time.</p>
+      <span class="thing-emoji">❤️</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="6">
+    <span class="thing-number">6</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #6</p>
+      <p class="thing-text">Your stubbornness in everything you do — honestly, it's equally annoying and inspiring, and I wouldn't change it for a second.</p>
+      <span class="thing-emoji">💪</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="7">
+    <span class="thing-number">7</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #7</p>
+      <p class="thing-text">Your taste in amazing old school music — you've made me realise what real music actually sounds like.</p>
+      <span class="thing-emoji">🎶</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="8">
+    <span class="thing-number">8</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #8</p>
+      <p class="thing-text">The way you remember the tiny details about people — it makes them feel truly, genuinely seen.</p>
+      <span class="thing-emoji">✨</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="9">
+    <span class="thing-number">9</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #9</p>
+      <p class="thing-text">Your honesty — you say it as it is, no games, no drama. That kind of clarity is rare and genuinely refreshing.</p>
+      <span class="thing-emoji">💬</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="10">
+    <span class="thing-number">10</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #10</p>
+      <p class="thing-text">The way you love your parents — and mine too 👀 — with so much warmth and devotion. Watching you with them is one of the most beautiful things I've ever seen.</p>
+      <span class="thing-emoji">🏠</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="11">
+    <span class="thing-number">11</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #11</p>
+      <p class="thing-text">Your incredible creativity in crochet art — watching something beautiful come to life in your hands is pure magic.</p>
+      <span class="thing-emoji">🧶</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="12">
+    <span class="thing-number">12</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #12</p>
+      <p class="thing-text">Your glasses. They complete you. Please never lose them.</p>
+      <span class="thing-emoji">👓</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="13">
+    <span class="thing-number">13</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #13</p>
+      <p class="thing-text">The warmth you radiate — being around you genuinely, completely feels like being home.</p>
+      <span class="thing-emoji">🏡</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="14">
+    <span class="thing-number">14</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #14</p>
+      <p class="thing-text">How you always know the right thing to say — and equally, when to say absolutely nothing at all.</p>
+      <span class="thing-emoji">🕊️</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="15">
+    <span class="thing-number">15</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #15</p>
+      <p class="thing-text">Your opinions — you have them, you own them, and you defend them like an absolute champ. Never stop.</p>
+      <span class="thing-emoji">🔥</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="16">
+    <span class="thing-number">16</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #16</p>
+      <p class="thing-text">The way you light up when you talk about something you love — it's completely contagious and honestly the best thing to witness.</p>
+      <span class="thing-emoji">💡</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="17">
+    <span class="thing-number">17</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #17</p>
+      <p class="thing-text">You make effort for people — not because you have to, but simply because that's just who you are. Always.</p>
+      <span class="thing-emoji">🎁</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="18">
+    <span class="thing-number">18</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #18</p>
+      <p class="thing-text">The way you are around me — crazy, fun and completely random. It's my favourite version of everything.</p>
+      <span class="thing-emoji">🤪</span>
+    </div>
+  </div>
+
+  <div class="slide slide-thing" data-index="19">
+    <span class="thing-number">19</span>
+    <div class="thing-card">
+      <p class="thing-label">Thing #19</p>
+      <p class="thing-text">Your faith in people and your friends — your heart is genuinely the biggest, most beautiful one I've ever known.</p>
+      <span class="thing-emoji">💞</span>
+    </div>
+  </div>
+
+  <!-- Slide 20: Final birthday -->
+  <div class="slide slide-final" data-index="20">
+    <p class="candles">🕯️🕯️🕯️🕯️🕯️🕯️🕯️</p>
+    <h1 class="final-title">Happy 27th<br/>Birthday! 🎂</h1>
+    <p class="final-message">
+      27 years of you being absolutely, ridiculously, wonderfully yourself.<br/><br/>
+      Here's to more laughs, more adventures, more of everything that makes you <em>you</em>.<br/><br/>
+      I love you to the moon, the stars, and back again — and then some. 🌙
+    </p>
+    <div class="final-emoji-row">🎉 🎊 🎈 🥂 🎁</div>
+    <p class="candles" style="margin-top:1rem;">🕯️🕯️🕯️🕯️🕯️🕯️🕯️</p>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<button class="nav-btn" id="btn-prev" disabled>&#8592;</button>
+<button class="nav-btn" id="btn-next">&#8594;</button>
+
+<!-- Progress dots -->
+<div class="progress" id="progress"></div>
+
+<script>
+  const TOTAL = 21; // 0 hero + 19 things + 1 final
+  let current = 0;
+  let animating = false;
+
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const progressEl = document.getElementById('progress');
+
+  // Build progress dots
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    progressEl.appendChild(d);
+  }
+
+  const dots = Array.from(progressEl.querySelectorAll('.dot'));
+
+  function goTo(next) {
+    if (animating || next === current) return;
+    animating = true;
+
+    const prev = current;
+    current = next;
+
+    // Exit old
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add('exit-left');
+
+    // Prepare incoming
+    slides[current].style.transform = next > prev ? 'translateX(100%)' : 'translateX(-100%)';
+    slides[current].style.opacity = '0';
+    slides[current].style.pointerEvents = 'none';
+
+    // Force reflow
+    slides[current].offsetHeight;
+
+    // Activate incoming
+    slides[current].classList.add('active');
+    slides[current].style.transform = '';
+    slides[current].style.opacity = '';
+    slides[current].style.pointerEvents = '';
+
+    // Clean up after transition
+    setTimeout(() => {
+      slides[prev].classList.remove('exit-left');
+      slides[prev].style.transform = '';
+      animating = false;
+    }, 650);
+
+    // Update dots
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+
+    // Update buttons
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === TOTAL - 1;
+
+    // Fire confetti on final slide
+    if (current === TOTAL - 1) launchConfetti();
+  }
+
+  btnPrev.addEventListener('click', () => goTo(current - 1));
+  btnNext.addEventListener('click', () => goTo(current + 1));
+
+  // Keyboard nav
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+  });
+
+  // Touch/swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) dx < 0 ? goTo(current + 1) : goTo(current - 1);
+  }, { passive: true });
+
+  // ── Floating hearts ──
+  const heartsEl = document.getElementById('hearts');
+  const EMOJIS = ['❤️','🩷','💕','✨','🌸','💖','💝'];
+  for (let i = 0; i < 18; i++) {
+    const h = document.createElement('span');
+    h.className = 'heart';
+    h.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    h.style.left        = Math.random() * 100 + 'vw';
+    h.style.fontSize    = (0.8 + Math.random() * 1.4) + 'rem';
+    h.style.animationDuration  = (8 + Math.random() * 10) + 's';
+    h.style.animationDelay     = (Math.random() * 12) + 's';
+    heartsEl.appendChild(h);
+  }
+
+  // ── Confetti ──
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  let confettiPieces = [];
+  let confettiRunning = false;
+
+  function resizeCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  const CONFETTI_COLORS = ['#EDB8B8','#C96C7A','#A84E5E','#FDF5EE','#F0E2D0','#fff'];
+
+  function launchConfetti() {
+    if (confettiRunning) return;
+    confettiRunning = true;
+    confettiPieces = [];
+    for (let i = 0; i < 180; i++) {
+      confettiPieces.push({
+        x:    Math.random() * canvas.width,
+        y:    Math.random() * canvas.height - canvas.height,
+        w:    6 + Math.random() * 8,
+        h:    10 + Math.random() * 10,
+        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+        rot:  Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.12,
+        vy:   2 + Math.random() * 4,
+        vx:   (Math.random() - 0.5) * 2,
+      });
+    }
+    animateConfetti();
+  }
+
+  function animateConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    for (const p of confettiPieces) {
+      p.y   += p.vy;
+      p.x   += p.vx;
+      p.rot += p.rotSpeed;
+      if (p.y < canvas.height + 20) alive = true;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    }
+    if (alive) requestAnimationFrame(animateConfetti);
+    else { confettiRunning = false; ctx.clearRect(0, 0, canvas.width, canvas.height); }
+  }
+</script>
+</body>
+</html>
